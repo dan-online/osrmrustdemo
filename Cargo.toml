@@ -1,0 +1,9 @@
+[package]
+name = "osrmthing"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+rsc_osrm = { path = "rsc_osrm" }
+osrm = { path= "osrm-rs" }
+rs_osrm = "2.0.1"

@@ -1,0 +1,6 @@
+[submodule "osrm-rs"]
+	path = osrm-rs
+	url = https://github.com/deliveroo/osrm-rs
+[submodule "rsc_osrm"]
+	path = rsc_osrm
+	url = https://github.com/dan-online/rsc_osrm
