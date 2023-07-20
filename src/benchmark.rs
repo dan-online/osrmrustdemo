@@ -1,4 +1,6 @@
-use std::time::{Duration, Instant};
+use std::time::Duration;
+
+const WARMUP_RUNS: u32 = 5;
 
 // Benchmarks a given library by taking an input function 'func' and running it 'runs' times with the given 'points'.
 pub fn benchmark(
@@ -13,13 +15,16 @@ pub fn benchmark(
     // Create an empty vector 'times' to store the durations of each benchmark run.
     let mut run_times = Vec::with_capacity(runs as usize);
 
+    // Warm up the benchmark by running it 'WARMUP_RUNS' times.
+    // Note: this probably isn't necessary, but it's good practice.
+    for _ in 0..WARMUP_RUNS {
+        func(location, points.clone());
+    }
+
     // Run the benchmark 'runs' times.
     for _ in 0..runs {
-        let start_time = Instant::now();
+        let time = func(location, points.clone());
 
-        func(location, points.clone());
-
-        let time = start_time.elapsed();
         run_times.push(time);
     }
 

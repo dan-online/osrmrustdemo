@@ -74,5 +74,5 @@ RUN ldconfig /usr/local/lib/
 # Install cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
-# Mount your volume to /app and you're ready to develop
+# Mount your volume to /app and you're ready to develop, or use a dev container ofc
 WORKDIR /app

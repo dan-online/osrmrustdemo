@@ -1,5 +1,5 @@
 [package]
-name = "osrmthing"
+name = "osrm_rust_demo"
 version = "1.0.0"
 edition = "2021"
 

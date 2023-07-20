@@ -308,16 +308,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "osrmc-sys"
-version = "0.0.2"
-dependencies = [
- "bindgen",
- "cc",
- "pkg-config",
-]
-
-[[package]]
-name = "osrmthing"
+name = "osrm_rust_demo"
 version = "1.0.0"
 dependencies = [
  "comfy-table",
@@ -325,6 +316,15 @@ dependencies = [
  "rand",
  "rs_osrm",
  "rsc_osrm",
+]
+
+[[package]]
+name = "osrmc-sys"
+version = "0.0.2"
+dependencies = [
+ "bindgen",
+ "cc",
+ "pkg-config",
 ]
 
 [[package]]
