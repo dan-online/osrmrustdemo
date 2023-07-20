@@ -1,162 +1,66 @@
-use std::{env::args, time::Instant};
+mod benchmark;
+mod libs;
+mod utils;
 
-const ORIGIN: (f64, f64) = (25.308135, 51.233283);
-const DESTINATION: (f64, f64) = (25.783904, 51.229538);
-
-fn osrm_rs(origin: (f64, f64), destination: (f64, f64)) -> (f64, f64) {
-    use osrm::{Coordinate, Osrm};
-
-    let osrm = Osrm::new("./data/gcc-states-latest.osrm").unwrap();
-
-    let origin = Coordinate {
-        latitude: origin.0 as f32,
-        longitude: origin.1 as f32,
-    };
-
-    let destination = Coordinate {
-        latitude: destination.0 as f32,
-        longitude: destination.1 as f32,
-    };
-
-    let route_result = osrm.route(&origin, &destination);
-
-    match route_result {
-        Ok(route) => {
-            return (route.distance.into(), route.duration.into());
-        }
-        Err(osrm_error) => {
-            eprintln!(" {osrm_error}");
-            return (0.0, 0.0);
-        }
-    }
-}
-
-fn rs_osrm(origin: (f64, f64), destination: (f64, f64)) -> (f64, f64) {
-    use rs_osrm::{
-        engine_config::engine_config_builder::EngineConfigBuilder,
-        general::rs_structs::coordinate::Coordinate,
-        route_api::route_request_builder::RouteRequestBuilder, Algorithm, Status,
-    };
-
-    let osrm = EngineConfigBuilder::new("./data/gcc-states-latest.osrm")
-        .set_use_shared_memory(false)
-        .set_algorithm(Algorithm::CH)
-        .build()
-        .unwrap();
-
-    let mut req = RouteRequestBuilder::new(&vec![
-        Coordinate::new(origin.0, origin.1),
-        Coordinate::new(destination.0, destination.1),
-    ])
-    .build()
-    .unwrap();
-
-    let (status, result) = req.run(&osrm);
-
-    match status {
-        Status::Ok => {
-            return (result.routes[0].distance, result.routes[0].duration);
-        }
-        Status::Error => {
-            eprintln!(" Error: {:?}", result.message);
-            return (0.0, 0.0);
-        }
-    }
-}
-
-fn _rsc_osrm(origin: (f64, f64), destination: (f64, f64)) -> (f64, f64) {
-    use rsc_osrm::{
-        general::Coordinate, route::RouteRequest, Algorithm, EngineConfig, Osrm, Status,
-    };
-
-    let mut config = EngineConfig::new("./data/gcc-states-latest.osrm");
-
-    config.use_shared_memory = false;
-    config.verbosity = Some("WARNING".to_string());
-    config.algorithm = Algorithm::CH;
-
-    let osrm = Osrm::new(&mut config).unwrap();
-
-    let mut req = RouteRequest::new(&vec![
-        Coordinate {
-            name: Some("A".to_string()),
-            latitude: origin.0,
-            longitude: origin.1,
-        },
-        Coordinate {
-            name: Some("B".to_string()),
-            latitude: destination.0,
-            longitude: destination.1,
-        },
-    ]);
-
-    let (status, result) = req.run(&osrm);
-
-    match status {
-        Status::Ok => {
-            return (result.routes[0].distance, result.routes[0].duration);
-        }
-        Status::Error => {
-            eprintln!(" Error: {:?}", result.message);
-            return (0.0, 0.0);
-        }
-    }
-}
-
-pub fn benchmark(func: fn((f64, f64), (f64, f64)) -> (f64, f64), name: &str, runs: u32) {
-    println!("┌ Benchmarking {name}...");
-
-    let start = Instant::now();
-    let mut sample_res: (f64, f64) = (0.0, 0.0);
-    for _ in 0..runs {
-        if sample_res.0 == 0.0 {
-            sample_res = func(ORIGIN, DESTINATION);
-        } else {
-            func(ORIGIN, DESTINATION);
-        }
-    }
-
-    println!("│  Distance: {:?}", sample_res.0);
-    println!("│  Duration: {:?}", sample_res.1);
-
-    println!(
-        "└ {:?} runs in {:?}, avg of {:?}",
-        runs,
-        start.elapsed(),
-        start.elapsed() / runs
-    );
-}
-
-#[test]
-fn test_osrm_rs() {
-    let (distance, duration) = osrm_rs(ORIGIN, ORIGIN);
-    assert_eq!(distance, 0.0);
-    assert_eq!(duration, 0.0);
-}
-
-#[test]
-fn test_rs_osrm() {
-    let (distance, duration) = rs_osrm(ORIGIN, ORIGIN);
-    assert_eq!(distance, 0.0);
-    assert_eq!(duration, 0.0);
-}
-
-#[test]
-fn test_rsc_osrm() {
-    let (distance, duration) = rsc_osrm(ORIGIN, ORIGIN);
-    assert_eq!(distance, 0.0);
-    assert_eq!(duration, 0.0);
-}
+use crate::{
+    libs::{osrm_rs::osrm_rs, rs_osrm::rs_osrm, rsc_osrm::rsc_osrm},
+    utils::random_coord::random_coord,
+};
+use benchmark::benchmark;
+use comfy_table::Table;
 
 fn main() {
-    println!("🚀 OSRM Benchmarking");
+    // Define the number of runs for benchmarking
+    let runs = 50;
 
-    let runs = args()
-        .nth(1)
-        .and_then(|arg| arg.parse::<u32>().ok())
-        .unwrap_or(500);
+    // Define the location data to be used (in this case, "greater-london-latest")
+    let location = "greater-london-latest";
 
-    benchmark(osrm_rs, "osrm-rs", runs);
-    benchmark(rs_osrm, "rs-osrm", runs);
-    benchmark(_rsc_osrm, "rsc-osrm", runs);
+    // Define the coordinates (latitude and longitude) for generating random points
+    let coords = (51.509865, -0.118092);
+
+    // Create an empty vector to store random coordinates
+    let mut points = Vec::new();
+
+    // Generate 100 random coordinates around the given `coords` at a 5km radius
+    for _ in 0..100 {
+        points.push(random_coord(coords, 5));
+    }
+
+    // Get the number of points generated
+    let point_count = points.len();
+
+    // Extract the latitude and longitude of the first generated point
+    let demo_lat = points[0].0;
+    let demo_lon = points[0].1;
+
+    // Print information about the benchmark setup and the data being used
+    println!(
+        "🚀 OSRM Benchmarking {runs} runs with {point_count} random points, ex: {demo_lat}, {demo_lon}"
+    );
+
+    // Perform the benchmarking for each library (osrm_rs, rs_osrm, rsc_osrm)
+    // and get the results for each run (total, average, 95th percentile, standard deviation)
+    let osrm_rs_results = benchmark(osrm_rs, &location, "osrm-rs", runs, points.clone());
+    let rs_osrm_results = benchmark(rs_osrm, &location, "rs_osrm", runs, points.clone());
+    let rsc_osrm_results = benchmark(rsc_osrm, &location, "rsc_osrm", runs, points.clone());
+
+    // Create a table to display the benchmarking results in a tabular format
+    let mut table = Table::new();
+
+    // Set the header of the table with appropriate column names
+    table
+        .set_header(vec![
+            "Library",
+            "Total",
+            "Average",
+            "95th Percentile",
+            "Standard Deviation",
+        ])
+        .add_row(osrm_rs_results)
+        .add_row(rs_osrm_results)
+        .add_row(rsc_osrm_results);
+
+    // Print the table containing the benchmarking results
+    println!("{table}");
 }

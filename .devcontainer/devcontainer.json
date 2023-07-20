@@ -1,0 +1,15 @@
+{
+	"name": "OSRM",
+	"build": {
+		"context": "..",
+		"dockerfile": "../Dockerfile"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Swellaby.rust-pack",
+				"serayuzgur.crates"
+			]
+		}
+	}
+}

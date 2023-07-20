@@ -7,3 +7,5 @@ edition = "2021"
 rsc_osrm = { path = "rsc_osrm" }
 osrm = { path= "osrm-rs" }
 rs_osrm = "2.0.1"
+rand = "0.8.5"
+comfy-table = "7.0.1"
