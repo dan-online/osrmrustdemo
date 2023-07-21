@@ -20,4 +20,4 @@ jobs:
           tags: osrm-rust-demo
       
       - name: Run benchmark
-        run: docker run -it -v $(pwd):/app --rm osrm-rust:v5.27.1 /bin/bash -c '$HOME/.cargo/bin/cargo run'
+        run: docker run -it -v $(pwd):/app --rm osrm-rust-demo /bin/bash -c '$HOME/.cargo/bin/cargo run'
