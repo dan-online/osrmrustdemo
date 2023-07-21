@@ -27,6 +27,9 @@ jobs:
           load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Download test files
+        run: ./download-test-files.sh
       
       - name: Benchmark
         run: docker run -v $(pwd):/app --rm osrm-rust-demo /bin/bash -c '$HOME/.cargo/bin/cargo run'
