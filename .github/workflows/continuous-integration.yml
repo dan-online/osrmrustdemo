@@ -28,7 +28,16 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - uses: actions/cache@v3
+        id: osrm-cache
+        with:
+          path: data
+          key: ${{ runner.os }}-osrm-${{ hashFiles('download-test-files.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-osrm-
+
       - name: Download test files
+        if: steps.osrm-cache.outputs.cache-hit != 'true'
         run: ./download-test-files.sh
       
       - name: Benchmark
