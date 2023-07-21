@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:latest
 
 # set puid and pgid to 1000
 ENV PUID 1000
