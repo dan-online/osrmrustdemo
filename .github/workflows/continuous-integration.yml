@@ -23,4 +23,4 @@ jobs:
           cache-to: type=gha,mode=max
       
       - name: Benchmark
-        run: docker run -it -v $(pwd):/app --rm osrm-rust-demo /bin/bash -c '$HOME/.cargo/bin/cargo run'
+        run: docker run -v $(pwd):/app --rm osrm-rust-demo /bin/bash -c '$HOME/.cargo/bin/cargo run'

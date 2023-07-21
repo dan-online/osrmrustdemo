@@ -74,5 +74,9 @@ RUN ldconfig /usr/local/lib/
 # Install cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
+# Add safe repos to git
+RUN git config --global --add safe.directory /app/rsc_osrm/c_osrm
+RUN git config --global --add safe.directory /app/rsc_osrm/c_osrm/osrm-backend
+
 # Mount your volume to /app and you're ready to develop, or use a dev container ofc
 WORKDIR /app
