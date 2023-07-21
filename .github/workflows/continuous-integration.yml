@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
 jobs:
-  build:
+  benchmark:
+    name: Continuous Integration / Build and Benchmark
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -13,11 +14,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
+      - name: Build
         uses: docker/build-push-action@v4
         with:
           push: false
           tags: osrm-rust-demo
       
-      - name: Run benchmark
+      - name: Benchmark
         run: docker run -it -v $(pwd):/app --rm osrm-rust-demo /bin/bash -c '$HOME/.cargo/bin/cargo run'
