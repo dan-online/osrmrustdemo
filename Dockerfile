@@ -8,7 +8,7 @@ ENV PGID 1000
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Faster downloads
-RUN sed -i -e 's/http:\/\/archive\.ubuntu\.com\/ubuntu\//mirror:\/\/mirrors\.ubuntu\.com\/mirrors\.txt/' /etc/apt/sources.list
+# RUN sed -i -e 's/http:\/\/archive\.ubuntu\.com\/ubuntu\//mirror:\/\/mirrors\.ubuntu\.com\/mirrors\.txt/' /etc/apt/sources.list
 
 # Install all required libs
 RUN --mount=type=cache,target=/var/lib/apt \
