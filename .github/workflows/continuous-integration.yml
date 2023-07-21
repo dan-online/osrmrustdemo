@@ -19,6 +19,8 @@ jobs:
         with:
           push: false
           tags: osrm-rust-demo
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       
       - name: Benchmark
         run: docker run -it -v $(pwd):/app --rm osrm-rust-demo /bin/bash -c '$HOME/.cargo/bin/cargo run'
