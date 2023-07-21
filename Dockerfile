@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:latest
 
 # set puid and pgid to 1000
 ENV PUID 1000
@@ -8,7 +8,7 @@ ENV PGID 1000
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Faster downloads
-RUN sed -i -e 's/http:\/\/archive\.ubuntu\.com\/ubuntu\//mirror:\/\/mirrors\.ubuntu\.com\/mirrors\.txt/' /etc/apt/sources.list
+# RUN sed -i -e 's/http:\/\/archive\.ubuntu\.com\/ubuntu\//mirror:\/\/mirrors\.ubuntu\.com\/mirrors\.txt/' /etc/apt/sources.list
 
 # Install all required libs
 RUN --mount=type=cache,target=/var/lib/apt \
@@ -73,6 +73,10 @@ RUN ldconfig /usr/local/lib/
 
 # Install cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# Add safe repos to git
+RUN git config --global --add safe.directory /app/rsc_osrm/c_osrm
+RUN git config --global --add safe.directory /app/rsc_osrm/c_osrm/osrm-backend
 
 # Mount your volume to /app and you're ready to develop, or use a dev container ofc
 WORKDIR /app
